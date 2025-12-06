@@ -172,7 +172,18 @@
         });
 
         renderQuotes();
+        const quoteInput = document.getElementById("quoteInput");
+
+quoteInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        e.preventDefault();         // stops it from making a new line
+        addQuote();                // your existing function
+    }
+});
+
+        
     </script>
 </body>
 
 </html>
+
