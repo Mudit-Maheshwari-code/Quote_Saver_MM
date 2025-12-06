@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini Quote Saver</title>
+
+    <style>
+        body {
+            background: #050505;
+            color: #e6e6e6;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 40px 0;
+        }
+
+        h2 {
+            margin: 0 0 20px 0;
+            border-bottom: 2px solid #00eaff;
+            padding-bottom: 4px;
+            color: #00eaff;
+            text-align: center;
+        }
+
+        #quoteCount {
+            margin: 0 0 20px 0;
+            color: #00eaff;
+            text-align: center;
+        }
+
+        /* Full-width input area */
+        .input-area {
+            background: #1a1a1a;
+            /* grayish background */
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100vw;
+            box-sizing: border-box;
+            border-bottom: 2px solid #00eaff;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            font-size: 15px;
+            border-radius: 4px;
+            border: 1px solid #00eaff;
+            background: #2a2a2a;
+            /* slightly lighter gray */
+            color: #e6e6e6;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        button {
+            padding: 10px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: none;
+            font-weight: bold;
+            background: #3a3a3a;
+            color: #e6e6e6;
+            transition: background 0.2s ease;
+        }
+
+        button:hover {
+            background: #505050;
+        }
+
+        /* Quote list area full width */
+        #quoteList {
+            background: #0f0f1f;
+            padding: 15px;
+            min-height: 50px;
+            border: 2px solid #00eaff;
+            width: 100vw;
+            box-sizing: border-box;
+        }
+
+        li {
+            list-style: none;
+            margin: 8px 0;
+            background: #1a1a2a;
+            padding: 10px;
+            border-left: 4px solid #00eaff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-btn {
+            color: #ff2b91;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Mini Quote Saver</h2>
+    <div id="quoteCount">You have 0 saved quotes.</div>
+
+    <div class="input-area">
+        <input id="quoteInput" placeholder="Enter a quote..." />
+        <button id="addQuoteBtn">Add Quote</button>
+        <button id="clearAllBtn">Clear All</button>
+    </div>
+
+    <ul id="quoteList"></ul>
+
+    <script>
+        let quotes = JSON.parse(localStorage.getItem("quotes")) || [];
+
+        const input = document.getElementById("quoteInput");
+        const addBtn = document.getElementById("addQuoteBtn");
+        const clearAllBtn = document.getElementById("clearAllBtn");
+        const listEl = document.getElementById("quoteList");
+        const quoteCount = document.getElementById("quoteCount");
+
+        function updateCount() {
+            quoteCount.textContent = `You have ${quotes.length} saved quote${quotes.length !== 1 ? "s" : ""}.`;
+        }
+
+        function renderQuotes() {
+            listEl.innerHTML = "";
+            quotes.forEach((quote, index) => {
+                const li = document.createElement("li");
+                li.textContent = quote;
+
+                const deleteBtn = document.createElement("span");
+                deleteBtn.textContent = "❌";
+                deleteBtn.className = "delete-btn";
+                deleteBtn.onclick = () => deleteQuote(index);
+
+                li.appendChild(deleteBtn);
+                listEl.appendChild(li);
+            });
+            updateCount();
+        }
+
+        function addQuote() {
+            const text = input.value.trim();
+            if (!text) return;
+            quotes.push(text);
+            localStorage.setItem("quotes", JSON.stringify(quotes));
+            input.value = "";
+            renderQuotes();
+        }
+
+        function deleteQuote(index) {
+            quotes.splice(index, 1);
+            localStorage.setItem("quotes", JSON.stringify(quotes));
+            renderQuotes();
+        }
+
+        function clearAll() {
+            if (!confirm("Clear all quotes?")) return;
+            quotes = [];
+            localStorage.setItem("quotes", JSON.stringify(quotes));
+            renderQuotes();
+        }
+
+        addBtn.addEventListener("click", addQuote);
+        clearAllBtn.addEventListener("click", clearAll);
+
+        input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && input.value.trim() !== "") addQuote();
+        });
+
+        renderQuotes();
+    </script>
+</body>
+
+</html>
